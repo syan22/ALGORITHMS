@@ -1,0 +1,142 @@
+\documentclass[20pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{algorithm}% http://ctan.org/pkg/algorithm
+\usepackage{algpseudocode}% http://ctan.org/pkg/algorithmicx
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage{textcomp}
+\usepackage{float}
+\usepackage{amssymb}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\title{Week 04 -- Algorithms}
+\date{\textit{September 27th, 2019}}
+
+\begin{document}
+\maketitle
+\section{Network Connectivity}
+
+\subsection{Claim} \textit{Let \textbf{G} be a graph on n nodes, where n is an even number. If every node of \textbf{G} has degree at least n/2 then \textbf{G} is connected.}
+
+\subsection{Proof by Contradiction: } Suppose that our graph was disconnected. This would mean that our graph consists of two or more subgraphs. Without loss of generality assume that we have two subgraphs: $G_x$ and $G_y$ each of size n/2 since we're given a graph of \textit{n} vertices. We know that one invariant of our problem is that every node must have degree of at least n/2. This means that for any vertex in one of our sub graphs it would need to have at least n/2 connections. If we selected a vertex, $V_x$ in $G_x$ this means that the number of nodes in $G_x$ would be the number of connections, which we know is n/2 because the degree of any node is n/2, of $V_x$ plus 1 in order to account for itself. This means that the total number of nodes in $G_x$ would be: $$f_x = \frac{n}{2} + 1$$
+Similarly, If we selected a vertex, $V_y$ in $G_y$ this means that the number of nodes in $G_y$ would be the number of connections, which we know is n/2 because the degree of any node is n/2, of $V_y$ plus 1 in order to account for itself. This means that the total number of nodes in $G_y$ would be: $$f_y = \frac{n}{2} + 1$$
+Furthermore, this means that the total number of nodes in our graph would be:
+\begin{align}
+    & f_x + f_y \\
+    & \frac{n}{2} + 1 + \frac{n}{2} + 1 \\
+    & n + 2
+\end{align}
+Notice that this means that if our graph were disconnected with the above properties the total number of nodes we have is $n+2$ which isn't equal to \textit{n} vertices. This completes the proof.
+
+\section{Cycle Detection}
+
+Give an algorithm to detect whether a given undirected graph contains a cycle. If the graph contains a cycle, then your algorithm should output one. Your runtime should be O(m + n) for a graph with m edges and n vertices.
+Hint: Don’t forget edge cases. Don’t forget to return the cycle if one is detected.
+\\
+\underline{Algorithm}:\\
+stack s\\
+initialize vertex layers = NULL for all vertices in set\\
+while there is some v $\in$ V with v.layer = NULL
+
+\hspace{5mm}pick some vertex start $\in$ V
+
+\hspace{5mm}visit (start)
+
+\hspace{5mm}s.layer = 0
+
+\hspace{5mm}s.push(start)
+
+\hspace{5mm}while(s is not empty):
+
+\hspace{10mm}v = s.pop
+
+\hspace{10mm}for each neighbor u of v:
+
+\hspace{15mm}if (u.visited = False):
+
+\hspace{20mm}visit(u)
+
+\hspace{20mm}u.layer= v.layer + 1
+
+\hspace{20mm}s.push(u)
+
+\hspace{25mm}else if (u.visited = True) and (v.layer = u.layer):
+
+\hspace{20mm}path = [u,v]
+
+\hspace{20mm}while (u.getParent != v.getParent):
+
+\hspace{20mm}*(getParent is equilavent as looking at a node's neighbor that
+
+\hspace{20mm} has layer = node.layer - 1)*
+
+\hspace{25mm}u = u.getParent
+
+\hspace{25mm}path.insert(0,u)
+
+\hspace{25mm}v = v.getParent
+
+\hspace{25mm}path.append(v)
+
+\hspace{20mm}path.append(u.getParent)
+
+\hspace{20mm}return path *(there exists a cycle)
+
+return False *(there exists no cycle)\\
+
+This algorithm will utilize using a DFS to traverse every node. Given an arbitrary node as the start, every unvisited neighbor of that node will be given a distance away from the starting node. If it has visited a node that has the same distance, then we know that these two nodes must be connected. To retrieve the path, we will build the path starting from u and v. As long as their parent is not equal, add those nodes to a list. Once they find their common ancestor, then that is added to the list. Then we can return the path. The case where there is not path, every node will be labelled some layer number and return False.
+
+\section{Butterfly Classification}
+Your friends collected \textit{n} butterfly specimens and believe the specimens come from one of two butterfly species(call them species A and B.) They'd like to divide the \textit{n} specimens into two groups--those that belong to \textit{A} and those that belong to \textit{B}. However, it is very hard for them to directly label any one specimen. Instead, they adopt the following approach: For each pair of specimens \textit{i} and \textit{j} they study them and make a judgement on them. If they're the same they will label them the same if they're different they label them different. Call this labeling (either (\textit{i}, \textit{j}) are the same or (\textit{i}, \textit{j}) are different) a \textit{judgement}. A set of judgements is \textbf{consistent} if it is possible to label each specimen either \textit{A} or \textit{B} in such a way that for each pair (\textit{i}, \textit{j}) labeled "same", it is the case that \textit{i} and \textit{j} have the same label, and for each pair (\textit{i}, \textit{j}) labeled "different", it is the case that \textit{i} and \textit{j} have different labels.
+\newline\newline Design and analyze an algorithm which takes \textit{n} butterfly specimens and \textit{m} judgements, and outputs whether or not the judgements are consistent. Your algorithm should run in O(n + m) time.
+
+\subsection{Things to keep in mind: }
+A graph is bipartite if it can be partitioned into two sets \textit{A} and \textit{B} such that all edges in \textit{A} has an end in \textit{B}. An alternate definition of a bipartite graph is if every vertex can be colored one or two colors so that each edge has endpoints of different colors.
+
+\begin{algorithm}[H]
+  \caption{isBipartite(undirected graph G=(V,E))}
+  \begin{algorithmic}[1]
+    \State init queue Q
+    \State initialize all vertices to \textit{NULL}
+    \While{v $\varepsilon$ V with color=\textit{NULL}}
+        \State pick some v $\varepsilon$ V and color it
+        \State v.color = blue
+        \State Q.enqueue(v)
+        \While{Q $\neq$ empty} 
+            \State{u $\leftarrow$ Q.dequeue()}
+            \For{\texttt{<all neighbors \textit{w} of \textit{u}>}}
+                \If{\texttt{<w is NULL>}}
+                    \If{\texttt{<u.color is blue:>}}
+                        \texttt{<w.color = brown>}
+                    \Else
+                        \texttt{<w.color is equal to blue>}
+                    \EndIf
+                \EndIf
+                \If{\texttt{<w.color = u.color>}} return NO
+                \EndIf
+            \EndFor
+        \EndWhile
+        \State return yes
+    \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+\subsection{Claim} \textit{Let \textbf{G} be a graph of n nodes, where n is the number of butterfly specimens, if we can represent our graph \textbf{G} as a bipartite graph then the set of judgements is consistent}
+
+\subsection{Direct proof}
+Firstly, we will seek to establish what the inconsistencies are in our graph \textbf{G}. There are two cases in which a set of judgments can be inconsistent. These are:
+\begin{align}
+    & a = b \\
+    & a = c \\
+    & b \neq c
+\end{align}
+
+\begin{align}
+    & a \neq b \\
+    & a \neq c \\
+    & b = c
+\end{align}
+Explaining this idea we have: if butterfly a is the same as butterfly b and if butterfly a is the same as butterfly c and if butterfly b is different from butterfly c then our set is inconsistent! In the other case, if butterfly a is different from butterfly b and butterfly a is different from butterfly c and butterfly c and b are the same then our set is inconsistent!
+\newline\newline We'll come back to these inconsistencies later. Now, we should begin to construct our graph \textbf{G} given our set of judgements. The idea is that we want to represent our butterfly specimens as a bipartite graph. In order to construct our bipartite graph we will have nodes represent butterflies and an edge represent differences. So, $$v_1 \rightsquigarrow v_2 $$
+A connection between $v_1$ and $v_2$ means that they are different from each other.
+\end{document}
