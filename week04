@@ -107,7 +107,7 @@ A graph is bipartite if it can be partitioned into two sets \textit{A} and \text
             \State{u $\leftarrow$ Q.dequeue()}
             \For{\texttt{<all neighbors \textit{w} of \textit{u}>}}
                 \If{\texttt{<w is NULL>}}
-                    \If{\texttt{<u.color is blue:>}}
+                    \If{\texttt{<u.color is blue>}}
                         \texttt{<w.color = brown>}
                     \Else
                         \texttt{<w.color is equal to blue>}
@@ -117,26 +117,16 @@ A graph is bipartite if it can be partitioned into two sets \textit{A} and \text
                 \EndIf
             \EndFor
         \EndWhile
-        \State return yes
     \EndWhile
+    \State return YES
     \end{algorithmic}
 \end{algorithm}
-\subsection{Claim} \textit{Let \textbf{G} be a graph of n nodes, where n is the number of butterfly specimens, if we can represent our graph \textbf{G} as a bipartite graph then the set of judgements is consistent}
+\subsection{Claim} \textit{Let \textbf{G} be a graph of n nodes, where n is the number of butterfly specimens, if we can represent our graph \textbf{G} as a bipartite graph then the set of judgements, \textit{m}, is consistent.}
 
 \subsection{Direct proof}
-Firstly, we will seek to establish what the inconsistencies are in our graph \textbf{G}. There are two cases in which a set of judgments can be inconsistent. These are:
-\begin{align}
-    & a = b \\
-    & a = c \\
-    & b \neq c
-\end{align}
+We should begin to construct our graph \textbf{G} given our set of judgements. The idea is that we want to represent our butterfly specimens as a bipartite graph. In order to construct our bipartite graph we will have nodes represent butterflies and edges represent differences. So, $$v_1 \rule{0.5cm}{1} v_2 $$
+A connection between $v_1$ and $v_2$ means that they are different from each other. This will naturally partition our space into two separate sets based on difference. But, representing differences isn't enough in order to establish consistency. We seek to represent the concept of sameness between two $v_i$ and $v_g$ using edges which represent differences. We accounted for this by realizing that saying $v_i$ is the same to $v_j$, is the same as saying that $v_i$ and $v_j$ are definitely different to some other node $v_x$ which represents the other species of butterfly. This means that we will create a new node between two nodes that are the same, $v_i$ and $v_j$, $v_x$ : $$v_i \rule{0.5cm}{1} v_x \rule{0.5cm}{1} v_j$$
+We pass this undirected graph into our isBipartite algorithm delineated above. Our input represents an undirected graph which represents differences and sameness for the reasons established above. Our output from our isBipartite algorithm will tell us whether or not our graph is inconsistent. This is the case because if our graph isn't bipartite, then this means that our graph isn't 2 colorable, this implies that our graph consists of a number of butterfly species greater than 2 which does not make sense. The other case is if our graph contains an odd-length cycle which means that there exists a node such that its neighbors have already been colored using 2 colors, in the context of our problem this means that its neighbors have already been classified as either species \textit{A} or species \textit{B} and we know an edge means difference, therefore, to be different from \textit{A} or \textit{B} means that our set is inconsistent. This completes the proof.
 
-\begin{align}
-    & a \neq b \\
-    & a \neq c \\
-    & b = c
-\end{align}
-Explaining this idea we have: if butterfly a is the same as butterfly b and if butterfly a is the same as butterfly c and if butterfly b is different from butterfly c then our set is inconsistent! In the other case, if butterfly a is different from butterfly b and butterfly a is different from butterfly c and butterfly c and b are the same then our set is inconsistent!
-\newline\newline We'll come back to these inconsistencies later. Now, we should begin to construct our graph \textbf{G} given our set of judgements. The idea is that we want to represent our butterfly specimens as a bipartite graph. In order to construct our bipartite graph we will have nodes represent butterflies and an edge represent differences. So, $$v_1 \rightsquigarrow v_2 $$
-A connection between $v_1$ and $v_2$ means that they are different from each other.
+
 \end{document}
